@@ -1,5 +1,9 @@
+import java.util.Arrays;
+import ddf.minim.analysis.*;
 import ddf.minim.*;
 Minim minim;
+AudioInput in;
+FFT fftDo, fftRe, fftMi, fftFa, fftSol, fftLa, fftSi;
 
 AudioPlayer Do1, Re1, Mi1, Fa1, Sol1, La1, Si1, Do2, Re2, Mi2, Fa2, Sol2, La2, Si2,
 Do3, Re3, Mi3, Fa3, Sol3, La3, Si3, Do4, Re4, Mi4, Fa4, Sol4, La4, Si4,
@@ -10,11 +14,30 @@ DoS3, ReS3, FaS3, SolS3, LaS3, DoS4, ReS4, FaS4, SolS4, LaS4,
 DoS5, ReS5, FaS5, SolS5, LaS5, DoS6, ReS6, FaS6, SolS6, LaS6,
 DoS7, ReS7, FaS7, SolS7, LaS7, DoS8, ReS8, FaS8, SolS8, LaS8;
 
+ArrayList<FFT> elementos;
+ArrayList<AudioPlayer> elementos2;
+
+// how many individual peak bands we have (dep. binsperband)
+float gain = 0; // in dB
+float dB_scale = 3.0;  // pixels per dB
+int buffer_size = 1024;  // also sets FFT size (frequency resolution)
+float sample_rate = 44100;
+
+int spectrum_height = 200; // determines range of dB shown
+int legend_height = 20;
+int spectrum_width = 512; // determines how much of spectrum we see
+int legend_width = 40;
+int freqOffset = 0;
+
+final color colSelected=color(255,0,0);
+final color colPlain=color(255);
+
 int state = 0;
 
 void setup(){
  size(800,500);
- minim = new Minim(this);
+ minim = new Minim(this); 
+ 
  //Primeira Oitava
  Do1 = minim.loadFile("/notes/Dó1.mp3");
  Re1 = minim.loadFile("/notes/Ré1.mp3");
@@ -130,10 +153,30 @@ void setup(){
  FaS8 = minim.loadFile("/notes/Fá#8.mp3");
  SolS8 = minim.loadFile("/notes/Sol#8.mp3");
  LaS8 = minim.loadFile("/notes/Lá#8.mp3");
+ 
+  fftDo = new FFT(Do1.bufferSize(), Do1.sampleRate());
+  fftRe = new FFT(Re1.bufferSize(), Re1.sampleRate());
+  fftMi = new FFT(Mi1.bufferSize(), Mi1.sampleRate());
+  fftFa = new FFT(Fa1.bufferSize(), Fa1.sampleRate());
+  fftSol = new FFT(Sol1.bufferSize(), Sol1.sampleRate());
+  fftLa = new FFT(La1.bufferSize(), La1.sampleRate());
+  fftSi = new FFT(Si1.bufferSize(), Si1.sampleRate());
+  
+  // Tapered window important for log-domain display
+  fftDo.window(FFT.HAMMING);
+  fftRe.window(FFT.HAMMING);
+  fftMi.window(FFT.HAMMING);
+  fftFa.window(FFT.HAMMING);
+  fftSol.window(FFT.HAMMING);
+  fftLa.window(FFT.HAMMING);
+  fftSi.window(FFT.HAMMING);
+  
+  elementos = new ArrayList(Arrays.asList(fftDo, fftRe, fftMi, fftFa, fftSol, fftLa, fftSi));
+  elementos2 = new ArrayList(Arrays.asList(Do1, Re1, Mi1, Fa1, Sol1, La1, Si1));
 }
 
-void draw(){
-
+void draw(){  
+  
   if(state == 0){
     //menu
     textSize(64); text("PlayingPiano", 210, 135);
@@ -161,7 +204,51 @@ void draw(){
     sobre();
   }
 }
- 
+
+void audioVisualizer(){
+  
+  // perform a forward FFT on the samples in input buffer
+  for (int i = 0; i < 7; i++) {
+    FFT e = elementos.get(i);
+    AudioPlayer e2 = elementos2.get(i);
+    e.forward(e2.mix);
+  }
+  //fftDo.forward(Do.mix);
+  //fftRe.forward(Re.mix);
+  //fftMi.forward(Mi.mix);
+  //fftFa.forward(Fa.mix);
+  //fftSol.forward(Sol.mix);
+  //fftLa.forward(La.mix);
+  //fftSi.forward(Si.mix);
+
+
+  noFill();
+  for (FFT e : elementos) {
+    for (int i = 0; i < e.specSize(); i++) {
+
+    // draw the line for frequency band i using dB scale
+    float val = dB_scale*(20*((float)Math.log10(e.getBand(i))) + gain);
+
+    if (e.getBand(i) == 0) {   
+      val = -200;
+    }  // avoid log(0)
+
+    int y = spectrum_height - Math.round(val);
+
+    if (y > spectrum_height) { 
+      y = spectrum_height;
+    }
+
+    float x1=legend_width+i+freqOffset;
+    float y1=spectrum_height;
+    float x2=x1;
+    float y2=y;
+
+    line(x1, y1, x2, y2);
+    }
+  }
+}
+
 void piano(){
  if (keyPressed) { if (key == 'q') { DoE(); } }
  if (keyPressed) { if (key == 'w') { ReE(); } }
@@ -192,6 +279,8 @@ void piano(){
 
 
 void teclas() {
+  audioVisualizer();
+ 
  //Oitava Esquerda
  fill(255);   rect(0,380, 40,120);  fill(0); textSize(12);  text("Dó", 10,485);
  fill(255);   rect(41,380,40,120);  fill(0); textSize(12);   text("Ré", 51,485);

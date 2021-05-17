@@ -1,7 +1,11 @@
 import java.util.Arrays;
+import processing.video.*;
+Movie movie;
+
 import ddf.minim.analysis.*;
 import ddf.minim.*;
 Minim minim;
+
 AudioInput in;
 FFT fftDo1, fftRe1, fftMi1, fftFa1, fftSol1, fftLa1, fftSi1, fftDoS1, fftReS1, fftFaS1, fftSolS1, fftLaS1,
 fftDo2, fftRe2, fftMi2, fftFa2, fftSol2, fftLa2, fftSi2, fftDoS2, fftReS2, fftFaS2, fftSolS2, fftLaS2,
@@ -45,7 +49,7 @@ int GrupoOitavas = 1;
 void setup(){
  size(800,500);
  minim = new Minim(this);
- 
+ movie = new Movie(this, "/videos/tutorial.mov");
  //Primeira Oitava
  Do1 = minim.loadFile("/notes/Dó1.mp3");
  Re1 = minim.loadFile("/notes/Ré1.mp3");
@@ -1156,17 +1160,23 @@ if (GrupoOitavas == 4){
 void keyReleased() {
   teste = true; 
 }
+void movieEvent(Movie m) {
+  m.read();
+}
 
 //Tutoriais
 void tutorial(){
-  
+  movie.play();
+  image(movie, 0, 0);
   if (keyPressed) { if (key == 'z'||key == 'Z'){
     state = 1;
+    movie.pause();
   }
   }
   
   if (keyPressed) { if (key == 'c'||key == 'C'){
     state = 3;
+    movie.pause();
   }
   }
   

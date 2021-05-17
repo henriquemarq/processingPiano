@@ -1,11 +1,9 @@
 import java.util.Arrays;
-import processing.video.*;
-Movie movie;
-
 import ddf.minim.analysis.*;
 import ddf.minim.*;
+import processing.video.*;
+Movie video;
 Minim minim;
-
 AudioInput in;
 FFT fftDo1, fftRe1, fftMi1, fftFa1, fftSol1, fftLa1, fftSi1, fftDoS1, fftReS1, fftFaS1, fftSolS1, fftLaS1,
 fftDo2, fftRe2, fftMi2, fftFa2, fftSol2, fftLa2, fftSi2, fftDoS2, fftReS2, fftFaS2, fftSolS2, fftLaS2,
@@ -46,10 +44,14 @@ final color colPlain=color(0);
 int state = 0;
 int GrupoOitavas = 1;
 
+boolean teste = true;
+boolean TocarVideo = true;
+
 void setup(){
  size(800,500);
  minim = new Minim(this);
- movie = new Movie(this, "/videos/tutorial.mov");
+ video = new Movie(this, "tutorial.MP4");
+ 
  //Primeira Oitava
  Do1 = minim.loadFile("/notes/Dó1.mp3");
  Re1 = minim.loadFile("/notes/Ré1.mp3");
@@ -409,6 +411,10 @@ void draw(){
   }
 }
 
+void movieEvent(Movie m) {
+     m.read();
+   }
+
 void audioVisualizer(){
   
   // perform a forward FFT on the samples in input buffer
@@ -645,8 +651,6 @@ void SolSD(){
 void LaSD(){
  fill(135);   rect(517,380,30,70);  fill(0);  text("Lá#", 522,440);
 }
-
-boolean teste = true;
 
 void keyPressed(){
 //notas
@@ -1160,29 +1164,41 @@ if (GrupoOitavas == 4){
 void keyReleased() {
   teste = true; 
 }
-void movieEvent(Movie m) {
-  m.read();
-}
 
 //Tutoriais
 void tutorial(){
-  movie.play();
-  image(movie, 0, 0);
+  
   if (keyPressed) { if (key == 'z'||key == 'Z'){
     state = 1;
-    movie.pause();
+    video.pause();
   }
   }
   
   if (keyPressed) { if (key == 'c'||key == 'C'){
     state = 3;
-    movie.pause();
+    video.pause(); delay(65); 
+  }
+  }
+  
+  if (keyPressed) { if (key == 'p'||key == 'P'){
+    video.play(); TocarVideo = true;
+  }
+  }
+  
+  if (keyPressed) { if (key == 'f'||key == 'F'){
+  video.stop(); TocarVideo = false;
   }
   }
   
   textAlign(CENTER);
-  fill(0); textSize(20);  text("'Z' para ir para o teclado", 400, 450);
-  fill(0); textSize(20);  text("'C' para ir para a página sobre", 400, 475);
+  fill(0); textSize(28);  text("'P' para tocar o vídeo", 400, 200);
+  fill(0); textSize(28);  text("'F' para para o vídeo", 400, 250);
+  fill(0); textSize(28);  text("'Z' para ir para o teclado", 400, 300);
+  fill(0); textSize(28);  text("'C' para ir para a página sobre", 400, 350);
+  
+  if (TocarVideo == true){
+  image(video, 0, 0, width, height);
+  }
 }
 
 //Sobre

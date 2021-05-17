@@ -44,7 +44,7 @@ int GrupoOitavas = 1;
 
 void setup(){
  size(800,500);
- minim = new Minim(this); 
+ minim = new Minim(this);
  
  //Primeira Oitava
  Do1 = minim.loadFile("/notes/Dó1.mp3");
@@ -474,13 +474,16 @@ void piano(){
  if (keyPressed) { if (key == 'k'||key == 'K') { FaSD(); } }
  if (keyPressed) { if (key == 'l'||key == 'L') { SolSD();} }
  if (keyPressed) { if (key == 'ç'||key == 'Ç') { LaSD(); } }
+ //Trocar páginas
+ if (keyPressed) { if (key == 'x'||key == 'X') { state = 2; } }
+ if (keyPressed) { if (key == 'c'||key == 'C') { state = 3; } }
 }
 
 
 
 void teclas() {
   audioVisualizer();
- 
+  textAlign(LEFT);
  //Oitava Esquerda
  fill(255);   rect(0,380, 40,120);  fill(0); textSize(12);  text("Dó", 10,485);
  fill(255);   rect(41,380,40,120);  fill(0); textSize(12);   text("Ré", 51,485);
@@ -535,6 +538,10 @@ void teclas() {
   }
  
  piano();
+ 
+ textAlign(CENTER);
+  fill(0); textSize(28);  text("'X' para ir para a página de tutorial", 400, 275);
+  fill(0); textSize(28);  text("'C' para ir para a página sobre", 400, 325);
 }
 
 //Preencher Oitavas Esquerdas
@@ -1153,6 +1160,19 @@ void keyReleased() {
 //Tutoriais
 void tutorial(){
   
+  if (keyPressed) { if (key == 'z'||key == 'Z'){
+    state = 1;
+  }
+  }
+  
+  if (keyPressed) { if (key == 'c'||key == 'C'){
+    state = 3;
+  }
+  }
+  
+  textAlign(CENTER);
+  fill(0); textSize(28);  text("'Z' para ir para o teclado", 400, 400);
+  fill(0); textSize(28);  text("'C' para ir para a página sobre", 400, 450);
 }
 
 //Sobre
@@ -1163,4 +1183,16 @@ void sobre(){
   fill(0); textSize(28);  text("Lucas Fernando Assunção Cavalherie", 400, 200);
   fill(0); textSize(28);  text("Marco Vinicius Costódio Pellizzarro", 400, 250);
   fill(0); textSize(28);  text("Théo César Zanotto da Silva", 400, 300);
+  fill(0); textSize(28);  text("'Z' para ir para o teclado", 400, 400);
+  fill(0); textSize(28);  text("'X' para ir para a página de tutorial", 400, 450);
+  
+  if (keyPressed) { if (key == 'z'||key == 'Z'){
+    state = 1;
+  }
+  }
+  
+  if (keyPressed) { if (key == 'x'||key == 'X'){
+    state = 2;
+  }
+  }
 }

@@ -1181,8 +1181,8 @@ void tutorial(){
   }
   
   textAlign(CENTER);
-  fill(0); textSize(28);  text("'Z' para ir para o teclado", 400, 400);
-  fill(0); textSize(28);  text("'C' para ir para a página sobre", 400, 450);
+  fill(0); textSize(20);  text("'Z' para ir para o teclado", 400, 450);
+  fill(0); textSize(20);  text("'C' para ir para a página sobre", 400, 475);
 }
 
 //Sobre
